@@ -21,6 +21,8 @@ This module assume that two machines in HA configuration have same network addre
           crm           => false,
           authkey       => 'XXXXX',
           tag           => $cluster,
+          monitor       => true,
+          logrotate     => true,
         }
 
 
@@ -63,7 +65,8 @@ This define add a VIP address to resources managed by heartbeat
           netmask   => 24,
           interface => 'eth0',
           bcast     => '192.168.1.255',
-          pref_node => 'botolo01'
+          pref_node => 'botolo01',
+          mail      => 'notifiche@softecspa.it',
         }
 
 ## Example
