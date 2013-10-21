@@ -44,7 +44,7 @@
 # [*authkey*]
 #   Authkey used by nodes
 #
-# [*tag*]
+# [*ha_tag*]
 #   A tag used for tagging exported resources and to retrieve resources exported by other nodes of the same HA system. Default: $cluster
 #
 # [*logrotate*]
@@ -95,3 +95,87 @@
 #     }
 #   }
 #
+class heartbeat (
+  $authkey,
+  $service_ensure     = running,
+  $service_enable     = true,
+  $debugfile          = '/var/log/ha.debug',
+  $logfile            = '/var/log/ha.log',
+  $logfacility        = 'local0',
+  $keepalive          = 2,
+  $warntime           = 5,
+  $deadtime           = 10,
+  $initdead           = 60,
+  $udpport            = 694,
+  $monitor_interface  = '',
+  $monitor_ip_address = '',
+  $auto_failback      = false,
+  $crm                = false,
+  $ha_tag             = $cluster,
+  $logrotate          = true,
+  $monitor            = true,
+  $nagios_hostname    = '',
+  $file_template      = 'heartbeat/ha.cf.erb',
+) {
+
+  include heartbeat::params
+
+  validate_bool($auto_failback)
+  validate_bool($crm)
+  validate_bool($logrotate)
+  validate_bool($monitor)
+
+  if !is_integer($keepalive) {
+    fail ('parameter keepalive must be an integer value')
+  }
+
+  if !is_integer($warntime) {
+    fail ('parameter warntime must be an integer value')
+  }
+
+  if !is_integer($deadtime) {
+    fail ('parameter deadtime must be an integer value')
+  }
+
+  if !is_integer($initdead) {
+    fail ('parameter initdead must be an integer value')
+  }
+
+  if !is_integer($udpport) {
+    fail ('parameter udpport must be an integer value')
+  }
+
+
+  if ( $monitor_ip_address != '' ) and ( $monitor_ip_address !~ /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ ) {
+    fail ('invalid ip_address')
+  }
+
+  if ( $monitor_ip_address != '' ) and ( $monitor_interface == '' ) {
+    fail('If monitor_ip_address is specified, monitor interface must be also specified')
+  }
+
+  if $ha_tag == '' {
+    fail ('Please specify ha_tag or define $cluster variable')
+  }
+
+  if ( $monitor ) and ( $nagios_hostname == '' ) {
+    fail ('if monitor is enabled, $nagios_hostname must be specified')
+  }
+
+  $monitorip = $monitor_ip_address ? {
+    ''      => $monitor_interface ? {
+      ''      => $monitor_ip_address,
+      default => inline_template("<%= ipaddress_${interface} %>)"),
+    },
+    default => $monitor_ip_address
+  }
+
+  include heartbeat::install
+  include heartbeat::configure
+  include heartbeat::service
+
+  Class['heartbeat::install'] ->
+  Class['heartbeat::configure'] ->
+  Class['heartbeat::service']
+
+}

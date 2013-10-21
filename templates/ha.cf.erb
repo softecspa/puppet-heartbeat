@@ -1,0 +1,25 @@
+#       File to write debug messages to
+debugfile <%= debugfile %>
+#       File to write other messages to
+logfile <%= logfile %>
+#
+logfacility <%= logfacility %>
+#       keepalive: how many seconds between heartbeats
+keepalive <%= keepalive %>
+#   warntime: seconds-to-warning
+warntime <%= warntime %>
+#       deadtime: seconds-to-declare-host-dead
+deadtime <%= deadtime %>
+#   initdead: the maximum time HB waits for other nodes to check in at cluster startup
+initdead <%= initdead %>
+#       What UDP port to use for udp or ppp-udp communication?
+udpport <%= udpport %>
+<% if crm -%>
+#Use cms to manage resources
+crm respawn
+<% end -%>
+<% if auto_failback -%>
+auto_failback on
+<% else -%>
+auto_failback off
+<% end -%>
