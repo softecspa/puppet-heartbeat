@@ -95,6 +95,9 @@
 #     }
 #   }
 #
+#
+#
+#
 class heartbeat (
   $authkey,
   $service_ensure     = running,
