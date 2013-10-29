@@ -102,8 +102,7 @@ class heartbeat (
   $authkey,
   $service_ensure     = running,
   $service_enable     = true,
-  $debugfile          = '/var/log/ha.debug',
-  $logfile            = '/var/log/ha.log',
+  $log_dir            = '/var/log/heartbeat',
   $logfacility        = 'local0',
   $keepalive          = 2,
   $warntime           = 5,
@@ -171,6 +170,18 @@ class heartbeat (
       default => inline_template("<%= ipaddress_${interface} %>)"),
     },
     default => $monitor_ip_address
+  }
+
+  if $monitor {
+    include heartbeat::monitoring
+    Class['heartbeat::service'] ->
+    Class['heartbeat::monitoring']
+  }
+
+  if $logrotate {
+    include heartbeat::logrotate
+    Class['heartbeat::service'] ->
+    Class['heartbeat::logrotate']
   }
 
   include heartbeat::install
