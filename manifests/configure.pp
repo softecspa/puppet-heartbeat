@@ -52,4 +52,11 @@ class heartbeat::configure {
 
   Heartbeat::Interface <<| (ha_tag == $heartbeat::ha_tag) and (nodename != $hostname) |>>
   Concat_fragment <<| tag == $heartbeat::ha_tag |>>
+
+  file {$heartbeat::log_dir :
+    ensure  => directory,
+    mode    => '755',
+    owner   => 'root',
+    group   => 'root'
+  }
 }
