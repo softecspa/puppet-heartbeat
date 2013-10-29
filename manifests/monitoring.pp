@@ -9,7 +9,7 @@ class heartbeat::monitoring {
     checkname             => 'check_nrpe_1arg',
     service_description   => "Heartbeat",
     notifications_enabled => 0,
-    target                => "heartbeat_${::hostname}",
+    target                => "heartbeat_${::hostname}.cfg",
     params                => "!check_heartbeat",
     tag                   => "nagios_check_heartbeat_${heartbeat::nagios_hostname}",
   }
