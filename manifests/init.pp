@@ -173,6 +173,12 @@ class heartbeat (
     default => $monitor_ip_address
   }
 
+  if $monitor {
+    include heartbeat::monitoring
+    Class['heartbeat::service'] ->
+    Class['heartbeat::monitoring']
+  }
+
   include heartbeat::install
   include heartbeat::configure
   include heartbeat::service
