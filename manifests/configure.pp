@@ -59,4 +59,10 @@ class heartbeat::configure {
     owner   => 'root',
     group   => 'root'
   }
+
+  # permette di far bindare i servizi su ip non locali
+  sysctl::conf{'10-bind.conf':
+    key     => 'net.ipv4.ip_nonlocal_bind',
+    value   => 1
+  }
 }
