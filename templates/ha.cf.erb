@@ -23,3 +23,6 @@ auto_failback on
 <% else -%>
 auto_failback off
 <% end -%>
+<% if watchdog -%>
+watchdog /dev/watchdog
+<% end -%>

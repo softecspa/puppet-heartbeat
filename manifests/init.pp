@@ -53,6 +53,9 @@
 # [*monitor*]
 #   If enabled, enable monitoring of service heartbeat. It use nrpe::check_heartbeat and exporte relied nagios service.
 #
+# [*watchdog*]
+#   If true, enable watchdog. Default: true
+#
 # == Examples
 #
 # We have two node on which we want to manage VIP 192.168.1.100/24 on interface eth0 in HA. For strong reliability heartbeat monitor two interfaces. Suppose to have this two nodes:
@@ -116,8 +119,9 @@ class heartbeat (
   $ha_tag             = $cluster,
   $logrotate          = true,
   $monitor            = true,
-  $nagios_hostname    = '',
+  $nagios_hostname    = $nagios_hostname,
   $file_template      = 'heartbeat/ha.cf.erb',
+  $watchdog           = true,
 ) {
 
   include heartbeat::params
