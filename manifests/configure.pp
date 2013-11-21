@@ -5,7 +5,6 @@ class heartbeat::configure {
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    notify  => Service[$heartbeat::params::service_name],
     require => Concat_build['ha.cf'],
   }
 
@@ -42,7 +41,7 @@ class heartbeat::configure {
     content => "auth 1\n1 sha1 ${heartbeat::authkey}\n",
     owner   => "root",
     mode    => 0600,
-    notify  => Service[$heartbeat::params::service_name],
+    notify  => Exec["$heartbeat::params::service_name reload"],
   }
 
   @@concat_fragment {"ha.cf+003-$hostname.tmp":
@@ -65,4 +64,10 @@ class heartbeat::configure {
     key     => 'net.ipv4.ip_nonlocal_bind',
     value   => 1
   }
+
+  #load watchdog module
+  if $haproxy::watchdog {
+    modprobe::load {'softdog': }
+  }
+
 }

@@ -7,4 +7,10 @@ class heartbeat::service {
     hasrestart  => true,
   }
 
+  exec {"${heartbeat::params::service_name} reload":
+    command     => "/etc/init.d/${heartbeat::params::service_name} reload",
+    refreshonly => true,
+    subscribe   => Concat_build['ha.cf']
+  }
+
 }
