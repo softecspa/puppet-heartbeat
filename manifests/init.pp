@@ -171,9 +171,14 @@ class heartbeat (
   $monitorip = $monitor_ip_address ? {
     ''      => $monitor_interface ? {
       ''      => $monitor_ip_address,
-      default => inline_template("<%= ipaddress_${interface} %>)"),
+      default => inline_template("<%= ipaddress_${monitor_interface} %>)"),
     },
     default => $monitor_ip_address
+  }
+
+  heartbeat::monitored_interface { $monitor_interface :
+    interface => $monitor_interface,
+    address   => $monitorip,
   }
 
   if $monitor {
