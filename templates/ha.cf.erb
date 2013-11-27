@@ -1,28 +1,28 @@
 #       File to write debug messages to
-debugfile <%= log_dir %>/ha.log
+debugfile <%= scope.lookupvar('log_dir') %>/ha.log
 #       File to write other messages to
-logfile <%= log_dir %>/ha.debug
+logfile <%= scope.lookupvar('log_dir') %>/ha.debug
 #
-logfacility <%= logfacility %>
+logfacility <%= scope.lookupvar('logfacility') %>
 #       keepalive: how many seconds between heartbeats
-keepalive <%= keepalive %>
+keepalive <%= scope.lookupvar('keepalive') %>
 #   warntime: seconds-to-warning
-warntime <%= warntime %>
+warntime <%= scope.lookupvar('warntime') %>
 #       deadtime: seconds-to-declare-host-dead
-deadtime <%= deadtime %>
+deadtime <%= scope.lookupvar('deadtime') %>
 #   initdead: the maximum time HB waits for other nodes to check in at cluster startup
-initdead <%= initdead %>
+initdead <%= scope.lookupvar('initdead') %>
 #       What UDP port to use for udp or ppp-udp communication?
-udpport <%= udpport %>
-<% if crm -%>
+udpport <%= scope.lookupvar('udpport') %>
+<% if scope.lookupvar('crm') -%>
 #Use cms to manage resources
 crm respawn
 <% end -%>
-<% if auto_failback -%>
+<% if scope.lookupvar('auto_failback') -%>
 auto_failback on
 <% else -%>
 auto_failback off
 <% end -%>
-<% if watchdog -%>
+<% if scope.lookupvar('watchdog') -%>
 watchdog /dev/watchdog
 <% end -%>
