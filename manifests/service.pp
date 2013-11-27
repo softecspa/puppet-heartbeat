@@ -4,7 +4,7 @@ class heartbeat::service {
     ensure      => $heartbeat::service_ensure,
     enable      => $heartbeat::service_enable,
     hasstatus   => true,
-    hasrestart  => true,
+    hasrestart  => false,
   }
 
   exec {"${heartbeat::params::service_name} reload":
