@@ -19,7 +19,6 @@ class heartbeat::configure {
       mode    => 644,
       owner   => 'root',
       group   => 'root',
-      notify  => Service[$heartbeat::params::service_name],
       require => Concat_build['haresources'],
     }
 
