@@ -53,6 +53,9 @@
 # [*monitor*]
 #   If enabled, enable monitoring of service heartbeat. It use nrpe::check_heartbeat and exporte relied nagios service.
 #
+# [*watchdog*]
+#   If true, enable watchdog. Default: true
+#
 # == Examples
 #
 # We have two node on which we want to manage VIP 192.168.1.100/24 on interface eth0 in HA. For strong reliability heartbeat monitor two interfaces. Suppose to have this two nodes:
@@ -95,12 +98,14 @@
 #     }
 #   }
 #
+#
+#
+#
 class heartbeat (
   $authkey,
   $service_ensure     = running,
   $service_enable     = true,
-  $debugfile          = '/var/log/ha.debug',
-  $logfile            = '/var/log/ha.log',
+  $log_dir            = '/var/log/heartbeat',
   $logfacility        = 'local0',
   $keepalive          = 2,
   $warntime           = 5,
@@ -114,8 +119,9 @@ class heartbeat (
   $ha_tag             = $cluster,
   $logrotate          = true,
   $monitor            = true,
-  $nagios_hostname    = '',
+  $nagios_hostname    = $nagios_hostname,
   $file_template      = 'heartbeat/ha.cf.erb',
+  $watchdog           = true,
 ) {
 
   include heartbeat::params
@@ -165,9 +171,26 @@ class heartbeat (
   $monitorip = $monitor_ip_address ? {
     ''      => $monitor_interface ? {
       ''      => $monitor_ip_address,
-      default => inline_template("<%= ipaddress_${interface} %>)"),
+      default => inline_template("<%= ipaddress_${monitor_interface} %>"),
     },
     default => $monitor_ip_address
+  }
+
+  heartbeat::monitored_interface { $monitor_interface :
+    interface => $monitor_interface,
+    address   => $monitorip,
+  }
+
+  if $monitor {
+    include heartbeat::monitoring
+    Class['heartbeat::service'] ->
+    Class['heartbeat::monitoring']
+  }
+
+  if $logrotate {
+    include heartbeat::logrotate
+    Class['heartbeat::service'] ->
+    Class['heartbeat::logrotate']
   }
 
   include heartbeat::install
