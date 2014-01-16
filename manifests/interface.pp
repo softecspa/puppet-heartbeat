@@ -1,8 +1,8 @@
 define heartbeat::interface (
-  interface,
-  address,
-  nodename,
-  ha_tag,
+  $interface,
+  $address,
+  $nodename,
+  $ha_tag,
 ) {
 
   concat_fragment {"ha.cf+002-${name}.tmp":
