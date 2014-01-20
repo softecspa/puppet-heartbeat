@@ -151,7 +151,6 @@ class heartbeat (
     fail ('parameter udpport must be an integer value')
   }
 
-
   if ( $monitor_ip_address != '' ) and ( $monitor_ip_address !~ /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ ) {
     fail ('invalid ip_address')
   }

@@ -2,30 +2,30 @@
 #
 #
 # File to write debug messages to
-debugfile <%= scope.lookupvar('log_dir') %>/ha.log
+debugfile <%= scope.lookupvar('heartbeat::log_dir') %>/ha.log
 # File to write other messages to
-logfile <%= scope.lookupvar('log_dir') %>/ha.debug
+logfile <%= scope.lookupvar('heartbeat::log_dir') %>/ha.debug
 #
-logfacility <%= scope.lookupvar('logfacility') %>
+logfacility <%= scope.lookupvar('heartbeat::logfacility') %>
 # keepalive: how many seconds between heartbeats
-keepalive <%= scope.lookupvar('keepalive') %>
+keepalive <%= scope.lookupvar('heartbeat::keepalive') %>
 # warntime: seconds-to-warning
-warntime <%= scope.lookupvar('warntime') %>
+warntime <%= scope.lookupvar('heartbeat::warntime') %>
 # deadtime: seconds-to-declare-host-dead
-deadtime <%= scope.lookupvar('deadtime') %>
+deadtime <%= scope.lookupvar('heartbeat::deadtime') %>
 # initdead: the maximum time HB waits for other nodes to check in at cluster startup
-initdead <%= scope.lookupvar('initdead') %>
+initdead <%= scope.lookupvar('heartbeat::initdead') %>
 # What UDP port to use for udp or ppp-udp communication?
-udpport <%= scope.lookupvar('udpport') %>
-<% if scope.lookupvar('crm') -%>
+udpport <%= scope.lookupvar('heartbeat::udpport') %>
+<% if scope.lookupvar('heartbeat::crm') -%>
 # Use cms to manage resources
 crm respawn
 <% end -%>
-<% if scope.lookupvar('auto_failback') -%>
+<% if scope.lookupvar('heartbeat::auto_failback') -%>
 auto_failback on
 <% else -%>
 auto_failback off
 <% end -%>
-<% if scope.lookupvar('watchdog') -%>
+<% if scope.lookupvar('heartbeat::watchdog') -%>
 watchdog /dev/watchdog
 <% end -%>
