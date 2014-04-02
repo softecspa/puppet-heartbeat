@@ -34,6 +34,7 @@ define heartbeat::vip (
   $vip                = '',
   $file_template      = 'heartbeat/haresources/vip.erb',
   $source_nat         = false,
+  $source_address     = '',
 ) {
 
   if !defined(Class['heartbeat']) {
@@ -59,6 +60,10 @@ define heartbeat::vip (
 
   if ( $mail != '' ) and ( $mail !~ /.+@.+\..{1,4}$/ ) {
     fail('invalid mail was specified')
+  }
+
+  if ($source_nat) and ($source_address=='') {
+    fail('id source_nat is true, source_address must be specified')
   }
 
   concat_fragment {"haresources+002-${name}.tmp":
