@@ -111,7 +111,7 @@ class heartbeat (
   $warntime               = 5,
   $deadtime               = 10,
   $initdead               = 60,
-  $udpport                = 694,
+  $udpport                = '',
   $monitor_interface      = '',
   $monitor_ip_address     = '',
   $auto_failback          = false,
@@ -124,6 +124,8 @@ class heartbeat (
   $notification_period    = undef,
   $nagios_hostname        = $nagios_hostname,
   $file_template          = 'heartbeat/ha.cf.erb',
+  $failback_file_template = 'heartbeat/ha_failback.cf.erb',
+  $watchdog_file_template = 'heartbeat/ha_watchdog.cf.erb',
   $watchdog               = true,
 ) {
 
@@ -150,8 +152,8 @@ class heartbeat (
     fail ('parameter initdead must be an integer value')
   }
 
-  if !is_integer($udpport) {
-    fail ('parameter udpport must be an integer value')
+  if !is_integer($udpport) and ($udpport != '') {
+    fail ('if defined, parameter udpport must be an integer value')
   }
 
   if ( $monitor_ip_address != '' ) and ( $monitor_ip_address !~ /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/ ) {

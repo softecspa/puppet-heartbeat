@@ -22,14 +22,18 @@
 # [*mail*]
 #   Mail address used for resource switch notification. If blank no mail is sent
 #
+# [*source_nat*]
+#   Enable source nat on VIP
+#
 define heartbeat::vip (
   $netmask,
   $interface,
   $bcast,
   $pref_node,
-  $mail           = '',
-  $vip            = '',
-  $file_template  = 'heartbeat/haresources/vip.erb',
+  $mail               = '',
+  $vip                = '',
+  $file_template      = 'heartbeat/haresources/vip.erb',
+  $source_nat         = false,
 ) {
 
   if !defined(Class['heartbeat']) {

@@ -1,3 +1,4 @@
-<%= @pref_node -%> IPaddr2::<%= @resource_vip -%>/<%= @netmask -%>/<%= @interface -%>/<%= @bcast -%><% if @mail != '' %> \
+<%= @pref_node -%> <% if @source_nat %>SourceNat::<%= @interface %>::<%= @resource_vip -%> \
+    <% end -%>IPaddr2::<%= @resource_vip -%>/<%= @netmask -%>/<%= @interface -%>/<%= @bcast -%><% if @mail != '' %> \
     MailTo::<%= @mail -%>::VIP-<%= @resource_vip %><% end %>
 

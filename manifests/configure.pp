@@ -36,6 +36,14 @@ class heartbeat::configure {
     content => template($heartbeat::file_template)
   }
 
+  concat_fragment{'ha.cf+003.tmp':
+    content => template($heartbeat::failback_file_template)
+  }
+
+  concat_fragment{'ha.cf+005.tmp':
+    content => template($heartbeat::watchdog_file_template)
+  }
+
   file { $heartbeat::params::authkey_file :
     content => "auth 1\n1 sha1 ${heartbeat::authkey}\n",
     owner   => "root",
@@ -43,7 +51,7 @@ class heartbeat::configure {
     notify  => Exec["$heartbeat::params::service_name reload"],
   }
 
-  @@concat_fragment {"ha.cf+003-$hostname.tmp":
+  @@concat_fragment {"ha.cf+004-$hostname.tmp":
     content => inline_template("node $hostname"),
     tag     => $heartbeat::ha_tag,
   }
@@ -65,9 +73,23 @@ class heartbeat::configure {
     value   => 1
   }
 
+  sysctl::conf{'10-core_uses_pid.conf':
+    comment => 'Requested from HeartBeat',
+    key     => 'kernel.core_uses_pid',
+    value   => 1
+  }
+
   #load watchdog module
   if $haproxy::watchdog {
     modprobe::load {'softdog': }
+  }
+
+  file {"$heartbeat::params::scripts_dir/SourceNat":
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    source  => 'puppet:///modules/heartbeat/etc/SourceNat'
   }
 
 }

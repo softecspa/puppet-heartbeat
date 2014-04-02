@@ -6,4 +6,5 @@ class heartbeat::params {
   $service_name     = 'heartbeat'
   $authkey_file     = "${config_dir}authkeys"
   $resources_file   = "${config_dir}haresources"
+  $scripts_dir      = "${config_dir}/resource.d"
 }

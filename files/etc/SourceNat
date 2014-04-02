@@ -1,0 +1,110 @@
+#!/bin/bash
+
+set -e
+
+#####################################################
+# Lorenzo Cocchi                                    #
+# script per gestire il SOURCE NAT tramite Hearbeat #
+# Utilizzo: SourceNat::ethN::77.238.6.N             #
+#####################################################
+
+
+if [ $# -ne 3 ]; then
+    echo "Usage: $(basename $0) iface_name ip_address {start|stop|status}"
+    exit 2
+fi
+
+IFACE="$1"
+IP_ADDRESS="$2"
+CMD="$3"
+
+IPTABLES="/sbin/iptables"
+SYSCTL="/sbin/sysctl"
+
+
+ip_forward() {
+    local VALUE="${1:-0}"
+
+    ${SYSCTL} -q -w net.ipv4.ip_forward=${VALUE}
+}
+
+policy() {
+    local TARGET="${1:-ACCEPT}"
+
+    # Policy
+    $IPTABLES -P INPUT ${TARGET}
+    $IPTABLES -P OUTPUT ${TARGET}
+    $IPTABLES -P FORWARD ${TARGET}
+}
+
+flush_and_accept() {
+
+    # Reset the default policies in the filter table.
+    policy ACCEPT
+
+    # Reset the default policies in the nat table.
+    $IPTABLES -t nat -P PREROUTING ACCEPT
+    $IPTABLES -t nat -P POSTROUTING ACCEPT
+    $IPTABLES -t nat -P OUTPUT ACCEPT
+
+    # Reset the default policies in the mangle table.
+    $IPTABLES -t mangle -P PREROUTING ACCEPT
+    $IPTABLES -t mangle -P POSTROUTING ACCEPT
+    $IPTABLES -t mangle -P INPUT ACCEPT
+    $IPTABLES -t mangle -P OUTPUT ACCEPT
+    $IPTABLES -t mangle -P FORWARD ACCEPT
+
+    # Flush all the rules in the filter and nat tables.
+    $IPTABLES -F
+    $IPTABLES -t nat -F
+    $IPTABLES -t mangle -F
+
+    # Erase all chains that's not default in filter and nat table.
+    $IPTABLES -X
+    $IPTABLES -t nat -X
+    $IPTABLES -t mangle -X
+}
+
+source_nat() {
+    local IFACE="$1"
+    local IP_ADDRESS="$2"
+
+    ${IPTABLES} -t nat -A POSTROUTING -o ${IFACE} -j SNAT --to ${IP_ADDRESS}
+}
+
+status() {
+    local IFACE="$1"
+    local IP_ADDRESS="$2"
+
+    if (ip -4 addr show dev ${IFACE} | egrep -qw ${IP_ADDRESS}); then
+        echo OK
+    fi
+}
+
+case ${CMD} in
+    start)
+        flush_and_accept
+        ip_forward 1
+        source_nat ${IFACE} ${IP_ADDRESS}
+        RETVAL=$?
+        ;;
+
+    stop)
+        ip_forward 0
+        flush_and_accept
+        RETVAL=$?
+        ;;
+
+    restart)
+        $0 ${IFACE} ${IP_ADDRESS} stop
+        $0 ${IFACE} ${IP_ADDRESS} start
+        RETVAL=$?
+        ;;
+
+    status)
+        status ${IFACE} ${IP_ADDRESS}
+        RETVAL=$?
+        ;;
+esac
+
+exit ${RETVAL}

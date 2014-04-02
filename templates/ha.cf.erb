@@ -15,17 +15,13 @@ warntime <%= scope.lookupvar('heartbeat::warntime') %>
 deadtime <%= scope.lookupvar('heartbeat::deadtime') %>
 # initdead: the maximum time HB waits for other nodes to check in at cluster startup
 initdead <%= scope.lookupvar('heartbeat::initdead') %>
+# baud - set serial communication speed
+baud 38400
+<% if scope.lookupvar('heartbeat::udpport') != '' -%>
 # What UDP port to use for udp or ppp-udp communication?
 udpport <%= scope.lookupvar('heartbeat::udpport') %>
+<% end -%>
 <% if scope.lookupvar('heartbeat::crm') -%>
 # Use cms to manage resources
 crm respawn
-<% end -%>
-<% if scope.lookupvar('heartbeat::auto_failback') -%>
-auto_failback on
-<% else -%>
-auto_failback off
-<% end -%>
-<% if scope.lookupvar('heartbeat::watchdog') -%>
-watchdog /dev/watchdog
 <% end -%>
