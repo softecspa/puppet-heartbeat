@@ -5,12 +5,15 @@ set -e
 ###################################################
 # Lorenzo Cocchi                                  #
 #  - SOURCE NAT tramite Hearbeat -                #
-# Uso:                                            #
+#                                                 #
+# Utilizzo:                                       #
 #  SourceNat::eth0::192.168.36.0/27::77.238.6.35  #
 ###################################################
 
+SELF="$(basename $0)"
+
 if [ $# -ne 4 ]; then
-    echo "Usage: $(basename $0) iface source_ip/net to_ip {start|stop|status}"
+    echo "${SELF} iface_out source_address to_address {start|stop|status}"
     exit 2
 fi
 
@@ -21,7 +24,7 @@ CMD="$4"
 
 IPTABLES="/sbin/iptables"
 SYSCTL="/sbin/sysctl"
-
+RETVAL=1
 
 ip_forward() {
     local VALUE="${1:-0}"
@@ -109,5 +112,11 @@ case ${CMD} in
         RETVAL=$?
         ;;
 esac
+
+if [ ${RETVAL} -eq 0 ]; then
+    echo "Success"
+else
+    echo "Failed"
+fi
 
 exit ${RETVAL}
