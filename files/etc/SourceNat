@@ -67,6 +67,11 @@ flush_and_accept() {
     $IPTABLES -X
     $IPTABLES -t nat -X
     $IPTABLES -t mangle -X
+
+    # Zero the packet and byte counters in filter and nat table.
+    $IPTABLES -Z
+    $IPTABLES -t nat -Z
+    $IPTABLES -t mangle -Z
 }
 
 source_nat() {
