@@ -70,13 +70,13 @@ class heartbeat::configure {
   sysctl::conf{'bind':
     comment => 'Allow to bind services on a non local address',
     key     => 'net.ipv4.ip_nonlocal_bind',
-    value   => 1
+    value   => 10
   }
 
   sysctl::conf{'core_uses_pid':
     comment => 'Requested from HeartBeat',
     key     => 'kernel.core_uses_pid',
-    value   => 1
+    value   => 10
   }
 
   #load watchdog module
