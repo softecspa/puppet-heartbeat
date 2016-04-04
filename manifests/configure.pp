@@ -67,15 +67,13 @@ class heartbeat::configure {
   }
 
   # permette di far bindare i servizi su ip non locali
-  sysctl::conf{'bind':
+  sysctl::conf{ 'net.ipv4.ip_nonlocal_bind':
     comment => 'Allow to bind services on a non local address',
-    key     => 'net.ipv4.ip_nonlocal_bind',
     value   => 1,
   }
 
-  sysctl::conf{'core_uses_pid':
-    comment => 'Requested from HeartBeat',
-    key     => 'kernel.core_uses_pid',
+  sysctl::conf{'kernel.core_uses_pid':
+    comment => 'Required from HeartBeat',
     value   => 1
   }
 
