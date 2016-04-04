@@ -9,22 +9,22 @@ class heartbeat::configure {
   }
 
   concat_build{'ha.cf':
-    order   => ['*.tmp'],
-    target  => $heartbeat::params::config_file,
+    order  => ['*.tmp'],
+    target => $heartbeat::params::config_file,
   }
 
   if !$heartbeat::crm {
 
     file {$heartbeat::params::resources_file :
-      mode    => 644,
+      mode    => '0644',
       owner   => 'root',
       group   => 'root',
       require => Concat_build['haresources'],
     }
 
     concat_build {'haresources':
-      order   => ['*.tmp'],
-      target  => $heartbeat::params::resources_file
+      order  => ['*.tmp'],
+      target => $heartbeat::params::resources_file
     }
 
     concat_fragment {'haresources+001.tmp':
@@ -46,13 +46,13 @@ class heartbeat::configure {
 
   file { $heartbeat::params::authkey_file :
     content => "auth 1\n1 sha1 ${heartbeat::authkey}\n",
-    owner   => "root",
-    mode    => 0600,
-    notify  => Exec["$heartbeat::params::service_name reload"],
+    owner   => 'root',
+    mode    => '0600',
+    notify  => Exec["${heartbeat::params::service_name} reload"],
   }
 
-  @@concat_fragment {"ha.cf+004-$hostname.tmp":
-    content => inline_template("node $hostname"),
+  @@concat_fragment {"ha.cf+004-${hostname}.tmp":
+    content => inline_template("node ${hostname}"),
     tag     => $heartbeat::ha_tag,
   }
 
@@ -60,19 +60,19 @@ class heartbeat::configure {
   Concat_fragment <<| tag == $heartbeat::ha_tag |>>
 
   file {$heartbeat::log_dir :
-    ensure  => directory,
-    mode    => '755',
-    owner   => 'root',
-    group   => 'root'
+    ensure => directory,
+    mode   => '0755',
+    owner  => 'root',
+    group  => 'root'
   }
 
   # permette di far bindare i servizi su ip non locali
-  sysctl::conf{ 'net.ipv4.ip_nonlocal_bind':
+  sysctl { 'net.ipv4.ip_nonlocal_bind':
     comment => 'Allow to bind services on a non local address',
     value   => 1,
   }
 
-  sysctl::conf{'kernel.core_uses_pid':
+  sysctl {'kernel.core_uses_pid':
     comment => 'Required from HeartBeat',
     value   => 1
   }
@@ -82,12 +82,12 @@ class heartbeat::configure {
     modprobe::load {'softdog': }
   }
 
-  file {"$heartbeat::params::scripts_dir/SourceNat":
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    source  => 'puppet:///modules/heartbeat/etc/SourceNat'
+  file {"${heartbeat::params::scripts_dir}/SourceNat":
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/heartbeat/etc/SourceNat'
   }
 
 }
